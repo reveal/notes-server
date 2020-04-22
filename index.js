@@ -1,50 +1,49 @@
 let http      = require('http');
 let express   = require('express');
 let fs        = require('fs');
-let io        = require('socket.io');
 let mustache  = require('mustache');
 
 let app       = express();
 let server    = http.createServer(app);
-
-io = io(server);
+let io        = require('socket.io')(server);
 
 let opts = {
 	port: process.env.PORT || 1947,
-	baseDir : process.cwd()
+	revealDir: process.cwd(),
+	pluginDir: __dirname
 };
 
-io.on( 'connection', function( socket ) {
+io.on( 'connection', socket => {
 
-	socket.on( 'new-subscriber', function( data ) {
+	socket.on( 'new-subscriber', data => {
 		socket.broadcast.emit( 'new-subscriber', data );
 	});
 
-	socket.on( 'statechanged', function( data ) {
+	socket.on( 'statechanged', data => {
 		delete data.state.overview;
 		socket.broadcast.emit( 'statechanged', data );
 	});
 
-	socket.on( 'statechanged-speaker', function( data ) {
+	socket.on( 'statechanged-speaker', data => {
 		delete data.state.overview;
 		socket.broadcast.emit( 'statechanged-speaker', data );
 	});
 
 });
 
-app.use( express.static( opts.baseDir ) );
+app.use( express.static( opts.revealDir ) );
 
-app.get('/', function( req, res ) {
+app.get('/', ( req, res ) => {
 
 	res.writeHead( 200, { 'Content-Type': 'text/html' } );
-	fs.createReadStream( opts.baseDir + '/index.html' ).pipe( res );
+	fs.createReadStream( opts.revealDir + '/index.html' ).pipe( res );
 
 });
 
-app.get( '/notes/:socketId', function( req, res ) {
+app.get( '/notes/:socketId', ( req, res ) => {
 
-	fs.readFile( opts.baseDir + 'plugin/notes-server/notes.html', function( err, data ) {
-		res.send( mustache.to_html( data.toString(), {
+	fs.readFile( opts.pluginDir + '/index.html', ( err, data ) => {
+		res.send( mustache.render( data.toString(), {
 			socketId : req.params.socketId
 		}));
 	});

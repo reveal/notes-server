@@ -1,18 +1,15 @@
 # reveal.js Speaker Notes Server
 
-In some cases it can be desirable to run notes on a separate device from the one you're presenting on. The Node.js-based notes plugin lets you do this using the same note definitions as its client side counterpart. Include the required scripts by adding the following dependencies:
+reveal.js includes a speaker notes plugin which opens your notes in a new browser window. However in some cases it can be desirable to run notes on a separate device from the one you're presenting on. That's where this Node.js-based speaker notes plugin comes in.
 
-```javascript
-Reveal.initialize({
-  dependencies: [
-    { src: 'socket.io/socket.io.js', async: true },
-    { src: 'plugin/notes-server/client.js', async: true }
-  ]
-});
+## Getting Started
+
+1. Navigate to your reveal.js folder
+1. `npm install reveal-multiplex`
+1. `node node_modules/reveal-notes-server`
+1. Include the following scripts in your presentation, after `Reveal.initialize`:
+
+```html
+<script src="socket.io/socket.io.js"></script>
+<script src="node_modules/reveal-notes-server/client.js"></script>
 ```
-
-Then:
-
-1. Install [Node.js](http://nodejs.org/) (9.0.0 or later)
-2. Run `npm install`
-3. Run `node plugin/notes-server`
