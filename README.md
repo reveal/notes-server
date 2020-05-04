@@ -5,7 +5,7 @@ reveal.js includes a speaker notes plugin which shows your speaker notes and an 
 ## Getting Started
 
 1. Navigate to your reveal.js folder
-1. `npm install reveal-multiplex`
+1. `npm install reveal-notes-server`
 1. `node node_modules/reveal-notes-server`
 1. Include the following scripts in your presentation, after `Reveal.initialize`:  
     
