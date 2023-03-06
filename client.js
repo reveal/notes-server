@@ -1,3 +1,27 @@
+function generateQR(location) {
+	var div = document.createElement("div");
+	div.style = "position: absolute; top: 0px; display: grid; background-color: white; z-index: 999; padding: 10px;";
+	div.onclick = function () {
+		this.style.display = "none"
+	}
+
+	var spanTop = document.createElement("span");
+	spanTop.textContent = "Scan to open notes."
+
+	var spanBot = document.createElement("span");
+	spanBot.textContent = "Click to close."
+
+	var img = document.createElement("img");
+	img.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(location);
+	img.style = "padding: 5px";
+
+	div.appendChild(spanTop);
+	div.appendChild(img);
+	div.appendChild(spanBot);
+
+	document.body.appendChild(div);
+}
+
 (function() {
 
 	// don't emit events from inside the previews themselves
@@ -6,7 +30,9 @@
 	var socket = io.connect( window.location.origin ),
 		socketId = Math.random().toString().slice( 2 );
 
-	console.log( 'View slide notes at ' + window.location.origin + '/notes/' + socketId );
+	let location = window.location.origin + '/notes/' + socketId;
+	console.log( 'View slide notes at ' + location);
+	generateQR(location);
 
 	window.open( window.location.origin + '/notes/' + socketId, 'notes-' + socketId );
 
@@ -50,16 +76,23 @@
 		Reveal.setState( data.state );
 	} );
 
-	// Monitor events that trigger a change in state
-	Reveal.on( 'slidechanged', post );
-	Reveal.on( 'fragmentshown', post );
-	Reveal.on( 'fragmenthidden', post );
-	Reveal.on( 'overviewhidden', post );
-	Reveal.on( 'overviewshown', post );
-	Reveal.on( 'paused', post );
-	Reveal.on( 'resumed', post );
+	var interval = setInterval(function() {
+		if (typeof Reveal == 'undefined') return;
+		clearInterval(interval);
 
-	// Post the initial state
-	post();
+		Reveal.initialize().then( () => {
+			// reveal.js is ready
+			// Monitor events that trigger a change in state
+			Reveal.on( 'slidechanged', post );
+			Reveal.on( 'fragmentshown', post );
+			Reveal.on( 'fragmenthidden', post );
+			Reveal.on( 'overviewhidden', post );
+			Reveal.on( 'overviewshown', post );
+			Reveal.on( 'paused', post );
+			Reveal.on( 'resumed', post );
 
+			// Post the initial state
+			post();
+		} )
+	}, 10);
 }());

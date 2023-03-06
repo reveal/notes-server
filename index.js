@@ -3,13 +3,20 @@ let express   = require('express');
 let fs        = require('fs');
 let mustache  = require('mustache');
 
+const yargs = require('yargs/yargs')
+const { hideBin } = require('yargs/helpers')
+const argv = yargs(hideBin(process.argv)).argv
+
 let app       = express();
 let server    = http.createServer(app);
 let io        = require('socket.io')(server);
 
 let opts = {
-	port: process.env.PORT || 1947,
-	revealDir: process.cwd(),
+	hostname: argv.hostname,
+	port: argv.port || 1947,
+	revealDir: argv.revealDir || process.cwd(),
+	presentationDir: argv.presentationDir || '.',
+	presentationIndex: argv.presentationIndex || '/index.html',
 	pluginDir: __dirname
 };
 
@@ -32,12 +39,11 @@ io.on( 'connection', socket => {
 });
 
 app.use( express.static( opts.revealDir ) );
+app.use( express.static( opts.presentationDir ) );
 
 app.get('/', ( req, res ) => {
-
 	res.writeHead( 200, { 'Content-Type': 'text/html' } );
-	fs.createReadStream( opts.revealDir + '/index.html' ).pipe( res );
-
+	fs.createReadStream( opts.presentationDir + opts.presentationIndex ).pipe( res );
 });
 
 app.get( '/notes/:socketId', ( req, res ) => {
@@ -51,13 +57,17 @@ app.get( '/notes/:socketId', ( req, res ) => {
 });
 
 // Actually listen
-server.listen( opts.port || null );
+if(opts.hostname) {
+	server.listen( opts.port || null, opts.hostname);
+} else {
+	server.listen( opts.port || null);
+}
 
 let brown = '\033[33m',
 	green = '\033[32m',
 	reset = '\033[0m';
 
-let slidesLocation = 'http://localhost' + ( opts.port ? ( ':' + opts.port ) : '' );
+let slidesLocation = 'http://' + (opts.hostname ? opts.hostname : 'localhost') + ( opts.port ? ( ':' + opts.port ) : '' );
 
 console.log( brown + 'reveal.js - Speaker Notes' + reset );
 console.log( '1. Open the slides at ' + green + slidesLocation + reset );
