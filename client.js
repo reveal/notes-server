@@ -1,8 +1,9 @@
 function generateQR(location) {
 	var div = document.createElement("div");
+	div.id="qr";
 	div.style = "position: absolute; top: 0px; display: grid; background-color: white; z-index: 999; padding: 10px;";
 	div.onclick = function () {
-		this.style.display = "none"
+		hideQr();
 	}
 
 	var spanTop = document.createElement("span");
@@ -20,6 +21,10 @@ function generateQR(location) {
 	div.appendChild(spanBot);
 
 	document.body.appendChild(div);
+}
+
+function hideQr() {
+	document.getElementById("qr").style.display = "none";
 }
 
 (function() {
@@ -68,6 +73,7 @@ function generateQR(location) {
 
 	// When a new notes window connects, post our current state
 	socket.on( 'new-subscriber', function( data ) {
+		hideQr();
 		post();
 	} );
 
