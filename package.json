@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node index.js"
   },
+  "bin": "./cli.js",
+  "main": "index.js",
   "engines": {
     "node": ">=9.0.0"
   },
