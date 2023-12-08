@@ -27,7 +27,8 @@ function hideQr() {
 	document.getElementById("qr").style.display = "none";
 }
 
-(function() {
+function startClient (options = { enableQR: true }){
+	console.log('Options are', options);
 
 	// don't emit events from inside the previews themselves
 	if( window.location.search.match( /receiver/gi ) ) { return; }
@@ -37,7 +38,11 @@ function hideQr() {
 
 	let location = window.location.origin + '/notes/' + socketId;
 	console.log( 'View slide notes at ' + location);
-	generateQR(location);
+
+
+	if(options.enableQR) {
+		generateQR(location);
+	}
 
 	window.open( window.location.origin + '/notes/' + socketId, 'notes-' + socketId );
 
@@ -73,7 +78,9 @@ function hideQr() {
 
 	// When a new notes window connects, post our current state
 	socket.on( 'new-subscriber', function( data ) {
-		hideQr();
+		if(options.enableQR) {
+			hideQr();
+		}
 		post();
 	} );
 
@@ -101,4 +108,4 @@ function hideQr() {
 			post();
 		} )
 	}, 10);
-}());
+}

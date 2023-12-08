@@ -12,4 +12,34 @@ reveal.js includes a speaker notes plugin which shows your speaker notes and an 
     ```html
     <script src="socket.io/socket.io.js"></script>
     <script src="node_modules/reveal-notes-server/client.js"></script>
+   <script>
+    startClient({
+        enableQR: true // set to false if you wish to disable the QR code generation
+    })
+   </script>
     ```
+   
+## Cli Options
+
+Here is the list of command line arguments you can use when running the notes server.
+
+   ```
+   hostname: argv.hostname,
+   port: argv.port || 1947,
+   revealDir: argv.revealDir || process.cwd(),
+   presentationDir: argv.presentationDir || '.',
+   presentationIndex: argv.presentationIndex || '/index.html',
+   pluginDir: __dirname
+   ```
+
+Example shell script to start the server on your Wi-Fi IP:
+
+```shell
+# Replace "wlp3s0" wit your Wi-Fi adapter's name
+address=$(ip addr show wlp3s0 | grep 'inet ' | sed -E 's/.*inet (([0-9]{0,3}\.?){4}).*/\1/g')
+
+npx reveal-notes-server \
+   --presentationDir=./ \
+   --presentationIndex=/my-presentation.adoc \
+   --hostname="$address"
+```
