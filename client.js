@@ -1,20 +1,30 @@
-function generateQR(location) {
-	var div = document.createElement("div");
-	div.id="qr";
-	div.style = "position: absolute; top: 0px; display: grid; background-color: white; z-index: 999; padding: 10px;";
+/**
+ * Checks whether this script is running from inside of the speaker
+ * notes window.
+ */
+function isSpeakerNotesPreview() {
+	return /receiver/gi.test( window.location.search );
+}
+
+function showQr(location) {
+	if( isSpeakerNotesPreview() ) return;
+
+	var div = document.createElement('div');
+	div.id='qr';
+	div.style = 'position: absolute; top: 0px; display: grid; background-color: white; z-index: 999; padding: 10px;';
 	div.onclick = function () {
 		hideQr();
 	}
 
-	var spanTop = document.createElement("span");
-	spanTop.textContent = "Scan to open notes."
+	var spanTop = document.createElement('span');
+	spanTop.textContent = 'Scan to open notes.'
 
-	var spanBot = document.createElement("span");
-	spanBot.textContent = "Click to close."
+	var spanBot = document.createElement('span');
+	spanBot.textContent = 'Click to close.'
 
-	var img = document.createElement("img");
-	img.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(location);
-	img.style = "padding: 5px";
+	var img = document.createElement('img');
+	img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(location);
+	img.style = 'padding: 5px';
 
 	div.appendChild(spanTop);
 	div.appendChild(img);
@@ -24,14 +34,16 @@ function generateQR(location) {
 }
 
 function hideQr() {
-	document.getElementById("qr").style.display = "none";
+	const qrElement = document.getElementById('qr');
+	if( qrElement ) {
+		qrElement.style.display = 'none';
+	}
 }
 
-function startClient (options = { enableQR: true }){
-	console.log('Options are', options);
+(function() {
 
-	// don't emit events from inside the previews themselves
-	if( window.location.search.match( /receiver/gi ) ) { return; }
+	// Don't emit events from presentations inside of the speaker window
+	if( isSpeakerNotesPreview() ) return;
 
 	var socket = io.connect( window.location.origin ),
 		socketId = Math.random().toString().slice( 2 );
@@ -39,12 +51,12 @@ function startClient (options = { enableQR: true }){
 	let location = window.location.origin + '/notes/' + socketId;
 	console.log( 'View slide notes at ' + location);
 
-
-	if(options.enableQR) {
-		generateQR(location);
-	}
-
 	window.open( window.location.origin + '/notes/' + socketId, 'notes-' + socketId );
+
+	// If the query string has qr=true then show the QR code
+	if( /qr=true/gi.test( window.location.search ) ) {
+		showQr();
+	}
 
 	/**
 	 * Posts the current slide data to the notes window
@@ -78,9 +90,7 @@ function startClient (options = { enableQR: true }){
 
 	// When a new notes window connects, post our current state
 	socket.on( 'new-subscriber', function( data ) {
-		if(options.enableQR) {
-			hideQr();
-		}
+		hideQr();
 		post();
 	} );
 
@@ -108,4 +118,5 @@ function startClient (options = { enableQR: true }){
 			post();
 		} )
 	}, 10);
-}
+
+}());

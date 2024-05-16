@@ -6,19 +6,26 @@ reveal.js includes a speaker notes plugin which shows your speaker notes and an 
 
 1. Navigate to your reveal.js folder
 1. `npm install reveal-notes-server`
-1. `node node_modules/reveal-notes-server`
-1. Include the following scripts in your presentation, after `Reveal.initialize`:  
+1. Include the following scripts in your presentation HTML file, after `Reveal.initialize`:  
     
     ```html
     <script src="socket.io/socket.io.js"></script>
     <script src="node_modules/reveal-notes-server/client.js"></script>
-   <script>
-    startClient({
-        enableQR: true // set to false if you wish to disable the QR code generation
-    })
-   </script>
     ```
-   
+1. `node node_modules/reveal-notes-server`
+1. Open the URL returned from previous command (`http://localhost:1947` by default).
+
+## QR Code
+
+Using a QR code makes it easier to access the speaker window. To generate a QR code shortcut, append qr=true at the end your URL:`http://localhost:1947?qr=true`.
+
+Alternatively you can append the following script to the end of your presentation:
+```html
+<script>
+  showQr();
+</script>
+```
+
 ## Cli Options
 
 Here is the list of command line arguments you can use when running the notes server.
@@ -40,6 +47,6 @@ address=$(ip addr show wlp3s0 | grep 'inet ' | sed -E 's/.*inet (([0-9]{0,3}\.?)
 
 npx reveal-notes-server \
    --presentationDir=./ \
-   --presentationIndex=/my-presentation.adoc \
+   --presentationIndex=/my-presentation.html \
    --hostname="$address"
 ```
