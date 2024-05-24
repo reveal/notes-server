@@ -72,6 +72,7 @@ const main = () => {
 
 	console.log( brown + 'reveal.js - Speaker Notes' + reset );
 	console.log( '1. Open the slides at ' + green + slidesLocation + reset );
+	console.log( `Or alternatively with QR code: ${green + slidesLocation}?qr=true${reset}`);
 	console.log( '2. Click on the link in your JS console to go to the notes page' );
 	console.log( '3. Advance through your slides and your notes will advance automatically' );
 }

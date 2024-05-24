@@ -55,7 +55,7 @@ function hideQr() {
 
 	// If the query string has qr=true then show the QR code
 	if( /qr=true/gi.test( window.location.search ) ) {
-		showQr();
+		showQr(location);
 	}
 
 	/**
